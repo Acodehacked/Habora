@@ -69,7 +69,7 @@ export default function HomePage() {
   async function addAsset(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setSaving(true);
     const form = new FormData(event.currentTarget); const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) { setSaving(false); notify("Your session has expired. Please sign in again."); return; }
     const { error } = await supabase.from("assets").insert({ user_id: user.id, name: String(form.get("name")), kind: String(form.get("kind")), description: String(form.get("description") || "") || null, purchase_price: form.get("purchase_price") ? Number(form.get("purchase_price")) : null });
     setSaving(false); if (error) { notify(error.message); return; }
     setModal(null); notify("Added to your space"); await loadData();
@@ -77,14 +77,18 @@ export default function HomePage() {
   async function addReminder(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setSaving(true);
     const form = new FormData(event.currentTarget); const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) { setSaving(false); notify("Your session has expired. Please sign in again."); return; }
     const { error } = await supabase.from("reminders").insert({ user_id: user.id, title: String(form.get("title")), due_date: String(form.get("due_date")), recurrence: String(form.get("recurrence") || "") || null });
     setSaving(false); if (error) { notify(error.message); return; }
     setModal(null); notify("Reminder created"); await loadData();
   }
   async function completeReminder(id: string) { const { error } = await supabase.from("reminders").update({ completed_at: new Date().toISOString() }).eq("id", id); if (error) notify(error.message); else { notify("Marked complete"); await loadData(); } }
   async function deleteAsset(id: string) { const { error } = await supabase.from("assets").delete().eq("id", id); if (error) notify(error.message); else { notify("Removed from your space"); await loadData(); } }
-  async function signOut() { await supabase.auth.signOut(); window.location.assign("/login"); }
+  async function signOut() {
+    const { error } = await supabase.auth.signOut();
+    if (error) { notify(`Could not sign out: ${error.message}`); return; }
+    window.location.assign("/login");
+  }
 
   const filteredAssets = assets.filter((asset) => `${asset.name} ${asset.kind} ${asset.description ?? ""}`.toLowerCase().includes(search.toLowerCase()));
   const firstName = userEmail.split("@")[0] || "there";
