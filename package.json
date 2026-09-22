@@ -12,9 +12,10 @@
     "db:push": "drizzle-kit push"
   },
   "dependencies": {
-    "drizzle-orm": "latest",
     "@supabase/ssr": "latest",
     "@supabase/supabase-js": "latest",
+    "dotenv": "^18.0.2",
+    "drizzle-orm": "latest",
     "lucide-react": "latest",
     "next": "latest",
     "postgres": "latest",
@@ -23,12 +24,13 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "latest",
+    "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "drizzle-kit": "latest",
     "eslint": "latest",
     "eslint-config-next": "latest",
-    "drizzle-kit": "latest",
     "postcss": "latest",
     "tailwindcss": "latest",
     "typescript": "latest"
